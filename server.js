@@ -1,4 +1,5 @@
 const express = require('express');
+const loki = require('lokijs');
 const app = express();
 const port = 3000;
 
@@ -19,21 +20,24 @@ app.get('/sell_bid/:seller/:price', (request, response) => {
 });
 
 app.get('/buy_bid/:buyer/:seller/:price', (request, response) => {
-  var trans = bids.findOne( {'seller':request.params.seller, 'price': request.params.price} ).remove();
-  if(!trans===null) {
+  var trans = bids.findOne( {'seller':request.params.seller, 'price': request.params.price} );
+  console.log("{'seller':request.params.seller, 'price': request.params.price}");
+  console.log(trans);
+  if(Object.keys(trans).length>0) {
+    bids.remove(trans);
     transactions.insert({'buyer': request.params.buyer,'seller':request.params.seller, 'price': request.params.price});
     response.json({'reply': "ok"});
   } else {
     response.json({'reply': "no bid like this"});
-  }  
+  }
 });
 
 app.get('/bids', (request, response) => {
-  response.json(bids.data());
+  response.json(bids.data);
 });
 
 app.get('/transactions', (request, response) => {
-  response.json(transactions.data());
+  response.json(transactions.data);
 });
 
 
